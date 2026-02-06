@@ -1,0 +1,73 @@
+{
+  "navbar": {
+    "login": "Log in",
+    "signUp": "Sign up",
+    "logout": "Logout",
+    "brand": "ApplianceStore"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "signInWithGoogle": "Log in with Google",
+    "signUpWithGoogle": "Sign up with Google",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "enterCredentials": "Enter your credentials to access your account",
+    "createAccount": "Create Account",
+    "enterInformation": "Enter your information to create an account",
+    "cardNumber": "Card Number (Optional)",
+    "enterCardNumber": "Enter your card number",
+    "enterPassword": "Enter your password",
+    "enterPasswordMin": "Enter your password (min 8 characters)",
+    "enterName": "Enter your name",
+    "enterEmail": "name@example.com",
+    "setPassword": "Set Your Password",
+    "setPasswordDescription": "Please set a password to complete your Google registration."
+  },
+  "buttons": {
+    "submit": "Submit",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "goHome": "Go Home",
+    "goBack": "Go Back",
+    "goToLogin": "Go to Login",
+    "refreshPage": "Refresh Page",
+    "completeRegistration": "Complete Registration"
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong. Please try again later.",
+    "invalidEmailOrPassword": "Invalid email or password",
+    "accountDisabled": "Account is disabled. Please check your email",
+    "userAlreadyExists": "User already exists",
+    "loginFailed": "Login failed. Please try again.",
+    "registrationFailed": "Registration failed. Please try again.",
+    "googleLoginFailed": "Google login failed. Please try again."
+  },
+  "language": {
+    "english": "English",
+    "ukrainian": "Українська"
+  },
+  "validation": {
+    "name": {
+      "required": "Name is required"
+    },
+    "email": {
+      "required": "Email is required",
+      "invalid": "Invalid email address"
+    },
+    "password": {
+      "required": "Password is required",
+      "min": "Password must be at least 8 characters"
+    },
+    "token": {
+      "required": "Token is required"
+    }
+  }
+}

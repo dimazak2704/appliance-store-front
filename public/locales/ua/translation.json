@@ -1,0 +1,73 @@
+{
+  "navbar": {
+    "login": "Увійти",
+    "signUp": "Зареєструватися",
+    "logout": "Вийти",
+    "brand": "ApplianceStore"
+  },
+  "auth": {
+    "login": "Вхід",
+    "register": "Реєстрація",
+    "email": "Електронна пошта",
+    "password": "Пароль",
+    "name": "Ім'я",
+    "confirmPassword": "Підтвердити пароль",
+    "forgotPassword": "Забули пароль?",
+    "signInWithGoogle": "Увійти через Google",
+    "signUpWithGoogle": "Зареєструватися через Google",
+    "dontHaveAccount": "Немає облікового запису?",
+    "alreadyHaveAccount": "Вже є обліковий запис?",
+    "signUp": "Зареєструватися",
+    "signIn": "Увійти",
+    "enterCredentials": "Введіть свої облікові дані для доступу до облікового запису",
+    "createAccount": "Створити обліковий запис",
+    "enterInformation": "Введіть свої дані для створення облікового запису",
+    "cardNumber": "Номер картки (необов'язково)",
+    "enterCardNumber": "Введіть номер картки",
+    "enterPassword": "Введіть пароль",
+    "enterPasswordMin": "Введіть пароль (мінімум 8 символів)",
+    "enterName": "Введіть ваше ім'я",
+    "enterEmail": "name@example.com",
+    "setPassword": "Встановити пароль",
+    "setPasswordDescription": "Будь ласка, встановіть пароль для завершення реєстрації через Google."
+  },
+  "buttons": {
+    "submit": "Відправити",
+    "loading": "Завантаження...",
+    "cancel": "Скасувати",
+    "goHome": "На головну",
+    "goBack": "Назад",
+    "goToLogin": "Перейти до входу",
+    "refreshPage": "Оновити сторінку",
+    "completeRegistration": "Завершити реєстрацію"
+  },
+  "errors": {
+    "somethingWentWrong": "Щось пішло не так. Будь ласка, спробуйте пізніше.",
+    "invalidEmailOrPassword": "Невірна електронна пошта або пароль",
+    "accountDisabled": "Обліковий запис вимкнено. Будь ласка, перевірте свою електронну пошту",
+    "userAlreadyExists": "Користувач вже існує",
+    "loginFailed": "Помилка входу. Будь ласка, спробуйте ще раз.",
+    "registrationFailed": "Помилка реєстрації. Будь ласка, спробуйте ще раз.",
+    "googleLoginFailed": "Помилка входу через Google. Будь ласка, спробуйте ще раз."
+  },
+  "language": {
+    "english": "English",
+    "ukrainian": "Українська"
+  },
+  "validation": {
+    "name": {
+      "required": "Ім'я є обов'язковим"
+    },
+    "email": {
+      "required": "Електронна пошта є обов'язковою",
+      "invalid": "Невірна електронна пошта"
+    },
+    "password": {
+      "required": "Пароль є обов'язковим",
+      "min": "Пароль повинен містити щонайменше 8 символів"
+    },
+    "token": {
+      "required": "Токен є обов'язковим"
+    }
+  }
+}

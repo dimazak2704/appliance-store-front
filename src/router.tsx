@@ -8,6 +8,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { NotFoundPage } from './pages/errors/NotFoundPage'
 import { ForbiddenPage } from './pages/errors/ForbiddenPage'
 import { ServerErrorPage } from './pages/errors/ServerErrorPage'
+import { CatalogPage } from './pages/CatalogPage'
 
 export const router = createBrowserRouter([
   {
@@ -70,9 +71,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: (
       <MainLayout>
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-          <h1 className="text-2xl font-bold">Welcome to Appliance Store</h1>
-        </div>
+        <CatalogPage />
       </MainLayout>
     ),
   },

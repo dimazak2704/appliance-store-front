@@ -11,7 +11,15 @@ export interface ApplianceDto {
     categoryNameEn: string;
     categoryNameUa: string;
     manufacturerName: string;
+    model: string;
+    power: number;
+    powerType: string;
+    active: boolean;
+    categoryId: number;
+    manufacturerId: number;
     quantity: number;
+    stockQuantity: number;
+    createdAt: string;
 }
 
 export interface ApplianceParams {
@@ -19,10 +27,13 @@ export interface ApplianceParams {
     size?: number;
     sort?: string;
     categoryId?: number;
-    manufacturerId?: number;
+    manufacturerIds?: string; // Comma separated IDs
     name?: string;
     minPrice?: number;
     maxPrice?: number;
+    minPower?: number;
+    maxPower?: number;
+    powerTypes?: string; // Comma separated AC220,AC110,ACCUMULATOR
 }
 
 export interface PageResponse<T> {
@@ -39,5 +50,10 @@ export const getAppliances = async (params: ApplianceParams): Promise<PageRespon
     const response = await axios.get<PageResponse<ApplianceDto>>(`${API_URL}/appliances`, {
         params,
     });
+    return response.data;
+};
+
+export const getApplianceById = async (id: number): Promise<ApplianceDto> => {
+    const response = await axios.get<ApplianceDto>(`${API_URL}/appliances/${id}`);
     return response.data;
 };

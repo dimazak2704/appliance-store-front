@@ -2,14 +2,32 @@ import { ApplianceDto } from '../api/appliances';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@/features/auth/store';
+import { addToCart } from '@/api/cart';
+import { useCartDrawerStore } from '@/store/useCartDrawerStore';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
     product: ApplianceDto;
+    onClick?: () => void;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, onClick }: ProductCardProps) {
     const { i18n } = useTranslation();
     const isUa = i18n.language === 'ua';
+    const { isAuthenticated } = useAuthStore();
+    const navigate = useNavigate();
+    const { open: openCart } = useCartDrawerStore();
+    const queryClient = useQueryClient();
+
+    const addToCartMutation = useMutation({
+        mutationFn: addToCart,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+            openCart();
+        },
+    });
 
     const name = isUa ? product.nameUa : product.nameEn;
     const category = isUa ? product.categoryNameUa : product.categoryNameEn;
@@ -23,11 +41,19 @@ export function ProductCard({ product }: ProductCardProps) {
         : `${API_BASE_URL}${product.imageUrl}`;
 
     const handleAddToCart = () => {
-        console.log(`Added to cart: ${product.id}`);
+        if (!isAuthenticated) {
+            const returnUrl = encodeURIComponent(window.location.pathname);
+            navigate(`/register?returnUrl=${returnUrl}&action=add&productId=${product.id}`);
+            return;
+        }
+        addToCartMutation.mutate(product.id);
     };
 
     return (
-        <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-200">
+        <Card
+            className={`h-full flex flex-col hover:shadow-lg transition-shadow duration-200 ${onClick ? 'cursor-pointer' : ''}`}
+            onClick={onClick}
+        >
             <CardHeader className="p-0">
                 <div className="aspect-square relative overflow-hidden rounded-t-lg bg-gray-100 dark:bg-gray-800">
                     {/* Use a placeholder if image fails or for better UX */}
@@ -55,7 +81,13 @@ export function ProductCard({ product }: ProductCardProps) {
                 <div className="text-xl font-bold w-full">
                     {price.toLocaleString()} <span className="text-sm font-normal">{currency}</span>
                 </div>
-                <Button onClick={handleAddToCart} className="w-full">
+                <Button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart();
+                    }}
+                    className="w-full"
+                >
                     {isUa ? 'Купити' : 'Add to Cart'}
                 </Button>
             </CardFooter>

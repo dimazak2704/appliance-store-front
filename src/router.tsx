@@ -9,6 +9,8 @@ import { NotFoundPage } from './pages/errors/NotFoundPage'
 import { ForbiddenPage } from './pages/errors/ForbiddenPage'
 import { ServerErrorPage } from './pages/errors/ServerErrorPage'
 import { CatalogPage } from './pages/CatalogPage'
+import { CheckoutPage } from './pages/CheckoutPage'
+import { OrderSuccessPage } from './pages/OrderSuccessPage'
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +70,22 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: '/checkout',
+    element: (
+      <MainLayout>
+        <CheckoutPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/order-success/:orderId',
+    element: (
+      <MainLayout>
+        <OrderSuccessPage />
+      </MainLayout>
+    ),
+  },
+  {
     path: '/',
     element: (
       <MainLayout>
@@ -84,4 +102,3 @@ export const router = createBrowserRouter([
     ),
   },
 ])
-

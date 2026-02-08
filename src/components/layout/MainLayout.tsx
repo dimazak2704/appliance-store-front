@@ -5,6 +5,7 @@ import { useAuthStore } from '@/features/auth/store'
 import { Button } from '@/components/ui/button'
 import { LogOut, User } from 'lucide-react'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { CartDrawer } from '@/components/CartDrawer'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -23,6 +24,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <CartDrawer />
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
@@ -78,4 +80,3 @@ export function MainLayout({ children }: MainLayoutProps) {
     </div>
   )
 }
-

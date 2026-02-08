@@ -18,7 +18,7 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange?.(false)}
       />
-      <div className="relative z-50 w-full max-w-lg mx-4">
+      <div className="relative z-50 mx-4">
         {children}
       </div>
     </div>
@@ -32,7 +32,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "bg-background rounded-lg border shadow-lg p-6",
+      "bg-background rounded-lg border shadow-lg p-6 w-full max-w-lg",
       className
     )}
     {...props}

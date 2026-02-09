@@ -11,6 +11,11 @@ import { ServerErrorPage } from './pages/errors/ServerErrorPage'
 import { CatalogPage } from './pages/CatalogPage'
 import { CheckoutPage } from './pages/CheckoutPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
+import { ProfileLayout } from './layouts/ProfileLayout'
+import { ProfileInfoPage } from './pages/profile/ProfileInfoPage'
+import { ProfileSecurityPage } from './pages/profile/ProfileSecurityPage'
+import { ProfileOrdersPage } from './pages/profile/ProfileOrdersPage'
+import { Navigate } from 'react-router-dom'
 
 export const router = createBrowserRouter([
   {
@@ -100,5 +105,31 @@ export const router = createBrowserRouter([
         <NotFoundPage />
       </MainLayout>
     ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <MainLayout>
+        <ProfileLayout />
+      </MainLayout>
+    ),
+    children: [
+      {
+        path: 'info',
+        element: <ProfileInfoPage />
+      },
+      {
+        path: 'security',
+        element: <ProfileSecurityPage />
+      },
+      {
+        path: 'orders',
+        element: <ProfileOrdersPage />
+      },
+      {
+        index: true,
+        element: <Navigate to="info" replace />
+      }
+    ]
   },
 ])

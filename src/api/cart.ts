@@ -17,11 +17,16 @@ export interface CartDto {
     items: CartItemDto[];
     totalPrice: number;
     totalQuantity: number;
+    amountLeftForFreeShipping: number;
+    isFreeShipping: boolean;
 }
 
+export type DeliveryType = 'SELF_PICKUP' | 'COURIER' | 'POST';
+
 export interface CheckoutRequest {
-    address: string;
+    address?: string;
     phone: string;
+    deliveryType: DeliveryType;
 }
 
 const getAuthHeader = () => {

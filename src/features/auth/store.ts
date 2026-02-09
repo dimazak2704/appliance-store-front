@@ -4,9 +4,9 @@ import { persist } from 'zustand/middleware'
 interface AuthState {
   token: string | null
   role: string | null
-  userName: string | null
+  name: string | null
   isAuthenticated: boolean
-  setAuth: (token: string, role: string, userName?: string) => void
+  setAuth: (token: string, role: string, name?: string) => void
   clearAuth: () => void
 }
 
@@ -15,23 +15,23 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       token: null,
       role: null,
-      userName: null,
+      name: null,
       isAuthenticated: false,
-      setAuth: (token: string, role: string, userName?: string) => {
+      setAuth: (token: string, role: string, name?: string) => {
         localStorage.setItem('auth_token', token)
         localStorage.setItem('auth_role', role)
-        if (userName) {
-          localStorage.setItem('user_name', userName)
-          set({ token, role, userName, isAuthenticated: true })
+        if (name) {
+          localStorage.setItem('user_name', name)
+          set({ token, role, name, isAuthenticated: true })
         } else {
-          set({ token, role, userName: null, isAuthenticated: true })
+          set({ token, role, name: null, isAuthenticated: true })
         }
       },
       clearAuth: () => {
         localStorage.removeItem('auth_token')
         localStorage.removeItem('auth_role')
         localStorage.removeItem('user_name')
-        set({ token: null, role: null, userName: null, isAuthenticated: false })
+        set({ token: null, role: null, name: null, isAuthenticated: false })
       },
     }),
     {
@@ -39,7 +39,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         token: state.token,
         role: state.role,
-        userName: state.userName,
+        name: state.name,
         isAuthenticated: state.isAuthenticated,
       }),
     }

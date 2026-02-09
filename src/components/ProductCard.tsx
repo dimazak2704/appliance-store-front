@@ -7,6 +7,7 @@ import { useAuthStore } from '@/features/auth/store';
 import { addToCart } from '@/api/cart';
 import { useCartDrawerStore } from '@/store/useCartDrawerStore';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
     product: ApplianceDto;
@@ -21,12 +22,27 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
     const { open: openCart } = useCartDrawerStore();
     const queryClient = useQueryClient();
 
+    // ...
+
     const addToCartMutation = useMutation({
         mutationFn: addToCart,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cart'] });
             openCart();
         },
+        onError: (error: any) => {
+            let message = 'Failed to add to cart';
+            if (error.response?.data) {
+                if (typeof error.response.data === 'string') {
+                    message = error.response.data;
+                } else if (error.response.data.message) {
+                    message = error.response.data.message;
+                }
+            } else if (error.message) {
+                message = error.message;
+            }
+            toast.error(message);
+        }
     });
 
     const name = isUa ? product.nameUa : product.nameEn;

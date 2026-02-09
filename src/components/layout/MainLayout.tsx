@@ -2,10 +2,15 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/features/auth/store'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { LogOut, User } from 'lucide-react'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
-import { CartDrawer } from '@/components/CartDrawer'
+import { CartDrawer } from '../CartDrawer'
+import { Toaster } from '@/components/ui/sonner'
+import { ShoppingCart } from 'lucide-react'
+import { useCartDrawerStore } from '@/store/useCartDrawerStore'
+import { getCart } from '@/api/cart'
+import { useQuery } from '@tanstack/react-query'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -14,8 +19,17 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { isAuthenticated, userName, clearAuth } = useAuthStore()
-  const displayName = userName || 'User'
+  const { isAuthenticated, name, clearAuth } = useAuthStore()
+  const displayName = name || 'User'
+  const { open: openCart } = useCartDrawerStore()
+
+  const { data: cart } = useQuery({
+    queryKey: ['cart'],
+    queryFn: getCart,
+    enabled: isAuthenticated,
+  });
+
+  const cartItemCount = cart?.items.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
   const handleLogout = () => {
     clearAuth()
@@ -25,6 +39,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <CartDrawer />
+      <Toaster />
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
@@ -51,18 +66,30 @@ export function MainLayout({ children }: MainLayoutProps) {
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">{displayName}</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="gap-2"
+                  <Button variant="ghost" size="icon" className="relative" onClick={openCart}>
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </Button>
+
+                  <Link
+                    to="/profile"
+                    className={buttonVariants({ variant: "ghost", className: "hidden sm:flex items-center gap-3 text-sm text-muted-foreground border-l pl-4 ml-4 hover:text-primary" })}
                   >
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t('navbar.logout')}</span>
+                    <User className="h-5 w-5" />
+                    <span className="hidden sm:inline font-medium">{displayName}</span>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleLogout}
+                    className="text-muted-foreground hover:text-foreground"
+                    title={t('navbar.logout')}
+                  >
+                    <LogOut className="h-5 w-5" />
                   </Button>
                 </>
               )}

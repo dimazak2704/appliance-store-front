@@ -161,19 +161,7 @@ export function CatalogPage() {
                         )}
                     </div>
 
-                    {/* Search */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">{isUa ? 'Пошук' : 'Search'}</label>
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder={isUa ? 'Назва товару...' : 'Product name...'}
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-8"
-                            />
-                        </div>
-                    </div>
+
 
                     {/* Categories */}
                     <div className="space-y-2">
@@ -328,13 +316,24 @@ export function CatalogPage() {
             <main className="flex-1 space-y-6">
                 {/* Top Bar */}
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card p-4 rounded-lg shadow-sm border">
-                    <div className="text-sm text-muted-foreground">
-                        {isUa ? `Знайдено товарів: ${data?.totalElements || 0}` : `Total items found: ${data?.totalElements || 0}`}
+                    <div className="flex flex-1 items-center gap-4 w-full">
+                        <div className="relative flex-1 max-w-sm">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder={isUa ? 'Назва товару...' : 'Product name...'}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-8"
+                            />
+                        </div>
+                        <div className="text-sm text-muted-foreground whitespace-nowrap hidden md:block">
+                            {isUa ? `Знайдено: ${data?.totalElements || 0}` : `Found: ${data?.totalElements || 0}`}
+                        </div>
                     </div>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-[200px] justify-between">
+                            <Button variant="outline" className="w-full sm:w-[200px] justify-between">
                                 {currentSortLabel}
                                 <Filter className="ml-2 h-4 w-4 opacity-50" />
                             </Button>

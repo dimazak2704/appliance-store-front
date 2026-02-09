@@ -6,6 +6,7 @@ import { useAuthStore } from '@/features/auth/store';
 import { addToCart } from '@/api/cart';
 import { useCartDrawerStore } from '@/store/useCartDrawerStore';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import {
     Dialog,
     DialogContent,
@@ -28,6 +29,8 @@ export function ProductDetailsDialog({ open, onOpenChange, productId }: ProductD
     const { open: openCart } = useCartDrawerStore();
     const queryClient = useQueryClient();
 
+    // ...
+
     const addToCartMutation = useMutation({
         mutationFn: addToCart,
         onSuccess: () => {
@@ -35,6 +38,19 @@ export function ProductDetailsDialog({ open, onOpenChange, productId }: ProductD
             onOpenChange(false); // Close dialog
             openCart(); // Open cart drawer
         },
+        onError: (error: any) => {
+            let message = 'Failed to add to cart';
+            if (error.response?.data) {
+                if (typeof error.response.data === 'string') {
+                    message = error.response.data;
+                } else if (error.response.data.message) {
+                    message = error.response.data.message;
+                }
+            } else if (error.message) {
+                message = error.message;
+            }
+            toast.error(message);
+        }
     });
 
     const handleAddToCart = () => {

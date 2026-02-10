@@ -59,13 +59,14 @@ export function handleApiError<T extends FieldValues>(
           })
         })
       } else {
-        options.setGlobalError?.(message)
+        // Fallback to global error if no field details
+        options.setGlobalError?.(message || 'Validation error')
       }
       break
 
     case 401:
       // Unauthorized
-      options.setGlobalError?.('Invalid email or password')
+      options.setGlobalError?.(message || 'Invalid email or password')
       break
 
     case 403:
@@ -89,4 +90,3 @@ export function handleApiError<T extends FieldValues>(
       break
   }
 }
-

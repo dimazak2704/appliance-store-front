@@ -3,7 +3,35 @@
     "login": "Log in",
     "signUp": "Sign up",
     "logout": "Logout",
+    "orders": "Orders",
+    "products": "Products",
+    "categories": "Categories",
+    "manufacturers": "Manufacturers",
+    "users": "Users",
     "brand": "ApplianceStore"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "yourOrder": "Your Order",
+    "freeShippingMessage": "Free shipping for orders over 30,000 UAH!",
+    "qualifiedFreeShipping": "Your order qualifies for free shipping!",
+    "deliveryDetails": "Delivery Details",
+    "phone": "Phone",
+    "deliveryAddress": "Delivery Address",
+    "deliveryMethod": "Delivery Method",
+    "selfPickup": "Self Pickup",
+    "courier": "Courier",
+    "novaPoshta": "Nova Poshta",
+    "cardRequired": "Card Required",
+    "cardRequiredMessage": "You need to add a bank card to proceed. ",
+    "goToProfile": "Go to Profile",
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "total": "Total",
+    "shippingCost": "Shipping Cost",
+    "free": "Free",
+    "cartEmpty": "Your cart is empty",
+    "goToCatalog": "Go to Catalog"
   },
   "auth": {
     "login": "Login",
@@ -39,7 +67,8 @@
     "goBack": "Go Back",
     "goToLogin": "Go to Login",
     "refreshPage": "Refresh Page",
-    "completeRegistration": "Complete Registration"
+    "completeRegistration": "Complete Registration",
+    "next": "Next"
   },
   "errors": {
     "somethingWentWrong": "Something went wrong. Please try again later.",
@@ -68,6 +97,62 @@
     },
     "token": {
       "required": "Token is required"
+    }
+  },
+  "admin": {
+    "management": "Product Management",
+    "addProduct": "Add Product",
+    "searchPlaceholder": "Search by name...",
+    "table": {
+      "id": "ID",
+      "image": "Image",
+      "name": "Name",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock",
+      "actions": "Actions"
+    },
+    "deleteConfirm": {
+      "title": "Are you sure?",
+      "description": "This action cannot be undone. The product will be deleted from the database.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "successDelete": "Product deleted",
+    "errorDelete": "Failed to delete"
+  },
+  "profile": {
+    "personalInfo": "Personal Information",
+    "updateInfo": "Update your personal details and payment information",
+    "emailNoChange": "Email cannot be changed",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "cardPlaceholder": "0000 0000 0000 0000",
+    "successUpdate": "Profile updated successfully",
+    "errorUpdate": "Failed to update profile",
+    "validation": {
+      "nameMin": "Name must be at least 2 characters"
+    }
+  },
+  "errorPages": {
+    "forbidden": {
+      "title": "Access Denied",
+      "description": "You don't have permission to access this resource.",
+      "message": "If you believe this is an error, please contact support.",
+      "goBack": "Go Back",
+      "goLogin": "Go to Login"
+    },
+    "notFound": {
+      "title": "404",
+      "description": "Oops! Page not found.",
+      "message": "The page you're looking for doesn't exist or has been moved.",
+      "goHome": "Go Home"
+    },
+    "serverError": {
+      "title": "Internal Server Error",
+      "description": "Something went wrong on our end.",
+      "message": "We're working to fix the issue. Please try again in a few moments.",
+      "refresh": "Refresh Page"
     }
   }
 }

@@ -16,6 +16,12 @@ import { ProfileInfoPage } from './pages/profile/ProfileInfoPage'
 import { ProfileSecurityPage } from './pages/profile/ProfileSecurityPage'
 import { ProfileOrdersPage } from './pages/profile/ProfileOrdersPage'
 import { Navigate } from 'react-router-dom'
+import { RequireAuth } from './components/auth/RequireAuth'
+import { AdminOrdersPage } from './pages/admin/AdminOrdersPage'
+import { AdminProductsPage } from './pages/admin/AdminProductsPage'
+import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
+import { AdminManufacturersPage } from './pages/admin/AdminManufacturersPage'
+import { AdminUsersPage } from './pages/admin/AdminUsersPage'
 
 export const router = createBrowserRouter([
   {
@@ -132,4 +138,40 @@ export const router = createBrowserRouter([
       }
     ]
   },
+  {
+    path: '/admin',
+    element: (
+      <MainLayout>
+        <RequireAuth allowedRoles={['EMPLOYEE', 'ADMIN']} />
+      </MainLayout>
+    ),
+    children: [
+      {
+        path: 'orders',
+        element: <AdminOrdersPage />
+      },
+      {
+        path: 'products',
+        element: <AdminProductsPage />
+      },
+      {
+        path: 'categories',
+        element: <AdminCategoriesPage />
+      },
+      {
+        path: 'manufacturers',
+        element: <AdminManufacturersPage />
+      },
+      {
+        path: 'users',
+        element: <RequireAuth allowedRoles={['ADMIN']} />,
+        children: [
+          {
+            index: true,
+            element: <AdminUsersPage />
+          }
+        ]
+      }
+    ]
+  }
 ])

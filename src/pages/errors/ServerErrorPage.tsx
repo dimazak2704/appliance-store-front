@@ -1,9 +1,12 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function ServerErrorPage() {
+  const { t } = useTranslation()
+
   const handleRefresh = () => {
     window.location.reload()
   }
@@ -18,18 +21,18 @@ export function ServerErrorPage() {
             </div>
           </div>
           <div className="space-y-2">
-            <CardTitle className="text-3xl font-bold">Internal Server Error</CardTitle>
+            <CardTitle className="text-3xl font-bold">{t('errorPages.serverError.title')}</CardTitle>
             <CardDescription className="text-lg">
-              Something went wrong on our end.
+              {t('errorPages.serverError.description')}
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            We're working to fix the issue. Please try again in a few moments.
+            {t('errorPages.serverError.message')}
           </p>
           <Button onClick={handleRefresh} className="w-full">
-            Refresh Page
+            {t('errorPages.serverError.refresh')}
           </Button>
         </CardContent>
       </Card>

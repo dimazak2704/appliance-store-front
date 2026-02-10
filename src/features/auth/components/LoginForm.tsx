@@ -13,7 +13,7 @@ import { handleApiError } from '@/lib/errorHandler'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormField, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormField, FormLabel, FormMessage, FormItem, FormControl } from '@/components/ui/form'
 import { AlertWithDismiss } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
 
@@ -31,7 +31,7 @@ export function LoginForm() {
     },
     onError: (error) => {
       handleApiError(error, {
-        setError,
+        setError: (field, error) => form.setError(field as any, error),
         setGlobalError: (message) => {
           setGlobalError(message)
         },
@@ -54,12 +54,7 @@ export function LoginForm() {
     },
   })
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<LoginFormData>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(getLoginSchema(t)),
   })
 
@@ -88,103 +83,115 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormField>
-            <FormLabel htmlFor="email">{t('auth.email')}</FormLabel>
-            <Input
-              id="email"
-              type="email"
-              placeholder={t('auth.enterEmail')}
-              {...register('email')}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('auth.email')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder={t('auth.enterEmail')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.email && (
-              <FormMessage>{errors.email.message}</FormMessage>
-            )}
-          </FormField>
 
-          <FormField>
-            <FormLabel htmlFor="password">{t('auth.password')}</FormLabel>
-            <Input
-              id="password"
-              type="password"
-              placeholder={t('auth.enterPassword')}
-              {...register('password')}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('auth.password')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder={t('auth.enterPassword')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.password && (
-              <FormMessage>{errors.password.message}</FormMessage>
-            )}
-          </FormField>
 
-          <div className="flex items-center justify-end">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-primary hover:underline"
-            >
-              {t('auth.forgotPassword')}
-            </Link>
-          </div>
-
-          {globalError && (
-            <AlertWithDismiss
-              variant="destructive"
-              onDismiss={() => setGlobalError(null)}
-            >
-              {globalError}
-            </AlertWithDismiss>
-          )}
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loginMutation.isPending}
-          >
-            {loginMutation.isPending && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {t('auth.login')}
-          </Button>
-
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+            <div className="flex items-center justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary hover:underline"
+              >
+                {t('auth.forgotPassword')}
+              </Link>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
 
-          {googleLoginMutation.isPending ? (
+            {globalError && (
+              <AlertWithDismiss
+                variant="destructive"
+                onDismiss={() => setGlobalError(null)}
+              >
+                {globalError}
+              </AlertWithDismiss>
+            )}
+
             <Button
-              type="button"
-              variant="outline"
+              type="submit"
               className="w-full"
-              disabled
+              disabled={loginMutation.isPending}
             >
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t('buttons.loading')}
+              {loginMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {t('auth.login')}
             </Button>
-          ) : (
-            <div className="w-full flex justify-center [&>div]:w-full">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                useOneTap
-                theme="outline"
-                size="large"
-                text="signin_with"
-                shape="rectangular"
-              />
-            </div>
-          )}
 
-          <div className="text-center text-sm">
-            {t('auth.dontHaveAccount')}{' '}
-            <Link to="/register" className="text-primary hover:underline font-medium">
-              {t('auth.signUp')}
-            </Link>
-          </div>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            {googleLoginMutation.isPending ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled
+              >
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('buttons.loading')}
+              </Button>
+            ) : (
+              <div className="w-full flex justify-center [&>div]:w-full">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  useOneTap
+                  theme="outline"
+                  size="large"
+                  text="signin_with"
+                  shape="rectangular"
+                />
+              </div>
+            )}
+
+            <div className="text-center text-sm">
+              {t('auth.dontHaveAccount')}{' '}
+              <Link to="/register" className="text-primary hover:underline font-medium">
+                {t('auth.signUp')}
+              </Link>
+            </div>
+          </form>
         </Form>
       </CardContent>
     </Card>

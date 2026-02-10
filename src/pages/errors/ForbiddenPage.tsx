@@ -1,11 +1,13 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ShieldX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function ForbiddenPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
@@ -17,15 +19,15 @@ export function ForbiddenPage() {
             </div>
           </div>
           <div className="space-y-2">
-            <CardTitle className="text-3xl font-bold">Access Denied</CardTitle>
+            <CardTitle className="text-3xl font-bold">{t('errorPages.forbidden.title')}</CardTitle>
             <CardDescription className="text-lg">
-              You don't have permission to access this resource.
+              {t('errorPages.forbidden.description')}
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            If you believe this is an error, please contact support.
+            {t('errorPages.forbidden.message')}
           </p>
           <div className="flex gap-2">
             <Button
@@ -33,10 +35,10 @@ export function ForbiddenPage() {
               onClick={() => navigate(-1)}
               className="flex-1"
             >
-              Go Back
+              {t('errorPages.forbidden.goBack')}
             </Button>
             <Button onClick={() => navigate('/login')} className="flex-1">
-              Go to Login
+              {t('errorPages.forbidden.goLogin')}
             </Button>
           </div>
         </CardContent>

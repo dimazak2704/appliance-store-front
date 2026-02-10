@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/features/auth/store'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, ClipboardList } from 'lucide-react'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { CartDrawer } from '../CartDrawer'
 import { Toaster } from '@/components/ui/sonner'
@@ -11,6 +11,8 @@ import { ShoppingCart } from 'lucide-react'
 import { useCartDrawerStore } from '@/store/useCartDrawerStore'
 import { getCart } from '@/api/cart'
 import { useQuery } from '@tanstack/react-query'
+import { useProductModal } from '@/store/productStore'
+import { ProductDetailsDialog } from '@/components/ProductDetailsDialog'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -19,7 +21,7 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { isAuthenticated, name, clearAuth } = useAuthStore()
+  const { isAuthenticated, name, role, clearAuth } = useAuthStore()
   const displayName = name || 'User'
   const { open: openCart } = useCartDrawerStore()
 
@@ -75,6 +77,43 @@ export function MainLayout({ children }: MainLayoutProps) {
                     )}
                   </Button>
 
+                  {(isAuthenticated && (role === 'EMPLOYEE' || role === 'ADMIN')) && (
+                    <div className="hidden sm:flex items-center gap-1">
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                        <Link to="/admin/orders">
+                          <ClipboardList className="h-5 w-5" />
+                          <span className="hidden lg:inline font-medium">{t('navbar.orders')}</span>
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                        <Link to="/admin/products">
+                          <ClipboardList className="h-5 w-5" />
+                          <span className="hidden lg:inline font-medium">{t('navbar.products')}</span>
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                        <Link to="/admin/categories">
+                          <ClipboardList className="h-5 w-5" />
+                          <span className="hidden lg:inline font-medium">{t('navbar.categories')}</span>
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                        <Link to="/admin/manufacturers">
+                          <ClipboardList className="h-5 w-5" />
+                          <span className="hidden lg:inline font-medium">{t('navbar.manufacturers')}</span>
+                        </Link>
+                      </Button>
+                      {role === 'ADMIN' && (
+                        <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                          <Link to="/admin/users">
+                            <User className="h-5 w-5" />
+                            <span className="hidden lg:inline font-medium">{t('navbar.users')}</span>
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
                   <Link
                     to="/profile"
                     className={buttonVariants({ variant: "ghost", className: "hidden sm:flex items-center gap-3 text-sm text-muted-foreground border-l pl-4 ml-4 hover:text-primary" })}
@@ -101,9 +140,15 @@ export function MainLayout({ children }: MainLayoutProps) {
       {/* Main content */}
       <main className="flex-1">{children}</main>
 
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 left-6 z-50">
         <LanguageSwitcher />
       </div>
+
+      <ProductDetailsDialog
+        open={useProductModal((state) => state.isOpen)}
+        onOpenChange={(open) => !open && useProductModal.getState().closeModal()}
+        productId={useProductModal((state) => state.selectedProductId)}
+      />
     </div>
   )
 }

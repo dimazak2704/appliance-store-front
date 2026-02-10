@@ -6,7 +6,7 @@ import { Search, Filter } from 'lucide-react';
 import { getAppliances } from '@/api/appliances';
 import { getCategories, getManufacturers } from '@/api/dictionaries';
 import { ProductCard } from '@/components/ProductCard';
-import { ProductDetailsDialog } from '@/components/ProductDetailsDialog';
+import { useProductModal } from '@/store/productStore';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -33,7 +33,6 @@ import {
 const SORT_OPTIONS = [
     { value: 'price,asc', labelEn: 'Price: Low to High', labelUa: 'Ціна: від найдешевшого' },
     { value: 'price,desc', labelEn: 'Price: High to Low', labelUa: 'Ціна: від найдорожчого' },
-    { value: 'createdAt,desc', labelEn: 'Newest', labelUa: 'Новинки' },
     { value: 'createdAt,desc', labelEn: 'Newest', labelUa: 'Новинки' },
 ];
 
@@ -65,12 +64,12 @@ export function CatalogPage() {
     const [maxPrice, setMaxPrice] = useState('');
     const [appliedMinPrice, setAppliedMinPrice] = useState<number | undefined>(undefined);
     const [appliedMaxPrice, setAppliedMaxPrice] = useState<number | undefined>(undefined);
-    const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+    const openProductModal = useProductModal((state) => state.openModal);
 
     // Pagination & Sort State
     const [page, setPage] = useState(0);
     const [sort, setSort] = useState('createdAt,desc');
-    const pageSize = 12;
+    const pageSize = 8;
 
     // Debounce Search
     useEffect(() => {
@@ -164,7 +163,7 @@ export function CatalogPage() {
 
 
                     {/* Categories */}
-                    <div className="space-y-2">
+                    <div className="space-y-3 pb-4 border-b">
                         <label className="text-sm font-medium">{isUa ? 'Категорії' : 'Categories'}</label>
                         <div className="flex flex-col gap-1">
                             {isCategoriesLoading ? (
@@ -187,7 +186,7 @@ export function CatalogPage() {
                     </div>
 
                     {/* Price Range */}
-                    <div className="space-y-2">
+                    <div className="space-y-3 pb-4 border-b">
                         <label className="text-sm font-medium">{isUa ? 'Ціна' : 'Price'}</label>
                         <div className="flex items-center gap-2">
                             <Input
@@ -212,7 +211,7 @@ export function CatalogPage() {
                     </div>
 
                     {/* Power Range */}
-                    <div className="space-y-2">
+                    <div className="space-y-3 pb-4 border-b">
                         <div className="flex justify-between items-center">
                             <label className="text-sm font-medium">{isUa ? 'Потужність' : 'Power'}</label>
                             {selectedPowerRanges.length > 0 && <span className="text-xs text-muted-foreground">({selectedPowerRanges.length})</span>}
@@ -243,7 +242,7 @@ export function CatalogPage() {
                     </div>
 
                     {/* Power Type */}
-                    <div className="space-y-2">
+                    <div className="space-y-3 pb-4 border-b">
                         <div className="flex justify-between items-center">
                             <label className="text-sm font-medium">{isUa ? 'Тип живлення' : 'Power Type'}</label>
                             {selectedPowerTypes.length > 0 && <span className="text-xs text-muted-foreground">({selectedPowerTypes.length})</span>}
@@ -274,7 +273,7 @@ export function CatalogPage() {
                     </div>
 
                     {/* Manufacturers */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         <div className="flex justify-between items-center">
                             <label className="text-sm font-medium">{isUa ? 'Виробник' : 'Manufacturer'}</label>
                             {manufacturerIds.length > 0 && <span className="text-xs text-muted-foreground">({manufacturerIds.length})</span>}
@@ -365,7 +364,7 @@ export function CatalogPage() {
                                     <ProductCard
                                         key={product.id}
                                         product={product}
-                                        onClick={() => setSelectedProductId(product.id)}
+                                        onClick={() => openProductModal(product.id)}
                                     />
                                 ))}
                             </div>
@@ -420,11 +419,6 @@ export function CatalogPage() {
                 )}
             </main>
 
-            <ProductDetailsDialog
-                open={!!selectedProductId}
-                onOpenChange={(open) => !open && setSelectedProductId(null)}
-                productId={selectedProductId}
-            />
         </div>
     );
 }

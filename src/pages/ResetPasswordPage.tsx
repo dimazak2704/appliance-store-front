@@ -1,4 +1,3 @@
-import React from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
@@ -9,7 +8,7 @@ import { authService } from '@/features/auth/authService'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormField, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Loader2, CheckCircle2 } from 'lucide-react'
 
 export function ResetPasswordPage() {
@@ -27,14 +26,12 @@ export function ResetPasswordPage() {
     },
   })
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ResetPasswordFormData>({
+  // 1. Rename to 'form'
+  const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(getResetPasswordSchema(t)),
     defaultValues: {
       token: token || '',
+      newPassword: '', // Add default value
     },
   })
 
@@ -85,44 +82,51 @@ export function ResetPasswordPage() {
               </div>
             </div>
           ) : (
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <FormField>
-                <FormLabel htmlFor="newPassword">New Password</FormLabel>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  placeholder="Enter your new password (min 8 characters)"
-                  {...register('newPassword')}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your new password (min 8 characters)"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.newPassword && (
-                  <FormMessage>{errors.newPassword.message}</FormMessage>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={resetPasswordMutation.isPending}
+                >
+                  {resetPasswordMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Reset Password
+                </Button>
+
+                {resetPasswordMutation.isError && (
+                  <FormMessage className="text-center">
+                    {resetPasswordMutation.error instanceof Error
+                      ? resetPasswordMutation.error.message
+                      : 'Failed to reset password. Please try again.'}
+                  </FormMessage>
                 )}
-              </FormField>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={resetPasswordMutation.isPending}
-              >
-                {resetPasswordMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Reset Password
-              </Button>
-
-              {resetPasswordMutation.isError && (
-                <FormMessage>
-                  {resetPasswordMutation.error instanceof Error
-                    ? resetPasswordMutation.error.message
-                    : 'Failed to reset password. Please try again.'}
-                </FormMessage>
-              )}
-
-              <div className="mt-4 text-center text-sm">
-                <Link to="/login" className="text-primary hover:underline">
-                  Back to Login
-                </Link>
-              </div>
+                <div className="mt-4 text-center text-sm">
+                  <Link to="/login" className="text-primary hover:underline">
+                    Back to Login
+                  </Link>
+                </div>
+              </form>
             </Form>
           )}
         </CardContent>

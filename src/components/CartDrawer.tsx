@@ -102,7 +102,7 @@ export function CartDrawer() {
                     <div className="flex flex-col min-h-full">
                         {/* Free Shipping Banner */}
                         <div className="p-4 bg-muted/30 border-b space-y-3">
-                            {cart.isFreeShipping ? (
+                            {cart.isFreeShipping || cart.totalPrice >= 30000 ? (
                                 <div className="flex items-center gap-2 text-green-600 font-medium p-2 bg-green-50 rounded-md border border-green-100">
                                     <div className="bg-green-100 p-1.5 rounded-full">
                                         <Truck className="h-4 w-4" />
@@ -116,13 +116,13 @@ export function CartDrawer() {
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="text-muted-foreground">
                                             {isUa
-                                                ? `Додайте ще ${cart.amountLeftForFreeShipping.toLocaleString()} грн для безкоштовної доставки`
-                                                : `Add ${cart.amountLeftForFreeShipping.toLocaleString()} UAH more for free shipping`}
+                                                ? `Додайте ще ${(cart.amountLeftForFreeShipping > 0 ? cart.amountLeftForFreeShipping : 30000 - cart.totalPrice).toLocaleString()} грн для безкоштовної доставки`
+                                                : `Add ${(cart.amountLeftForFreeShipping > 0 ? cart.amountLeftForFreeShipping : 30000 - cart.totalPrice).toLocaleString()} UAH more for free shipping`}
                                         </span>
                                         <Truck className="h-4 w-4 text-muted-foreground" />
                                     </div>
                                     <Progress
-                                        value={(cart.totalPrice / (cart.totalPrice + cart.amountLeftForFreeShipping)) * 100}
+                                        value={(cart.totalPrice / 30000) * 100}
                                         className="h-2"
                                     />
                                 </div>

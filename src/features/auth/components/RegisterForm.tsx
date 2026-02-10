@@ -11,11 +11,12 @@ import { handleApiError } from '@/lib/errorHandler'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormField, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormField, FormLabel, FormMessage, FormItem, FormControl } from '@/components/ui/form'
 import { AlertWithDismiss } from '@/components/ui/alert'
 import { Loader2, User, Mail, Lock, CreditCard, Sparkles } from 'lucide-react'
 import { GooglePasswordModal } from './GooglePasswordModal'
 import { useAuthStore } from '../store'
+import { formatCardNumber } from '@/lib/utils'
 
 export function RegisterForm() {
   const { t } = useTranslation()
@@ -34,7 +35,7 @@ export function RegisterForm() {
     },
     onError: (error) => {
       handleApiError(error, {
-        setError,
+        setError: (field, error) => form.setError(field as any, error),
         setGlobalError: (message) => {
           setGlobalError(message)
         },
@@ -42,18 +43,16 @@ export function RegisterForm() {
     },
   })
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<RegisterFormData>({
+  const form = useForm<RegisterFormData>({
     resolver: zodResolver(getRegisterSchema(t)),
   })
 
   const onSubmit = (data: RegisterFormData) => {
     setGlobalError(null)
-    registerMutation.mutate(data)
+    registerMutation.mutate({
+      ...data,
+      card: data.card?.replace(/\s/g, ''),
+    })
   }
 
   const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
@@ -95,127 +94,151 @@ export function RegisterForm() {
           <CardDescription className="text-sm text-muted-foreground">{t('auth.enterInformation')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 pb-6">
-          <Form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField>
-                <FormLabel htmlFor="name" className="text-sm font-medium flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  {t('auth.name')}
-                </FormLabel>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder={t('auth.enterName')}
-                  className="h-10"
-                  {...register('name')}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        {t('auth.name')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('auth.enterName')}
+                          className="h-10"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
                 />
-                {errors.name && (
-                  <FormMessage className="text-xs">{errors.name.message}</FormMessage>
-                )}
-              </FormField>
 
-              <FormField>
-                <FormLabel htmlFor="email" className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  {t('auth.email')}
-                </FormLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t('auth.enterEmail')}
-                  className="h-10"
-                  {...register('email')}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        {t('auth.email')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder={t('auth.enterEmail')}
+                          className="h-10"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
                 />
-                {errors.email && (
-                  <FormMessage className="text-xs">{errors.email.message}</FormMessage>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium flex items-center gap-2">
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                      {t('auth.password')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder={t('auth.enterPasswordMin')}
+                        className="h-10"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
                 )}
-              </FormField>
-            </div>
-
-            <FormField>
-              <FormLabel htmlFor="password" className="text-sm font-medium flex items-center gap-2">
-                <Lock className="h-4 w-4 text-muted-foreground" />
-                {t('auth.password')}
-              </FormLabel>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t('auth.enterPasswordMin')}
-                className="h-10"
-                {...register('password')}
               />
-              {errors.password && (
-                <FormMessage className="text-xs">{errors.password.message}</FormMessage>
-              )}
-            </FormField>
 
-            <FormField>
-              <FormLabel htmlFor="card" className="text-sm font-medium flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-                {t('auth.cardNumber')}
-              </FormLabel>
-              <Input
-                id="card"
-                type="text"
-                placeholder={t('auth.enterCardNumber')}
-                className="h-10"
-                {...register('card')}
+              <FormField
+                control={form.control}
+                name="card"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      {t('auth.cardNumber')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('auth.enterCardNumber')}
+                        className="h-10"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(formatCardNumber(e.target.value))
+                        }}
+                        maxLength={19}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
               />
-              {errors.card && (
-                <FormMessage className="text-xs">{errors.card.message}</FormMessage>
-              )}
-            </FormField>
 
-            {globalError && (
-              <AlertWithDismiss
-                variant="destructive"
-                onDismiss={() => setGlobalError(null)}
-                className="text-sm"
+              {globalError && (
+                <AlertWithDismiss
+                  variant="destructive"
+                  onDismiss={() => setGlobalError(null)}
+                  className="text-sm"
+                >
+                  {globalError}
+                </AlertWithDismiss>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full h-11 font-semibold text-base mt-2"
+                disabled={registerMutation.isPending}
               >
-                {globalError}
-              </AlertWithDismiss>
-            )}
+                {registerMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {t('auth.register')}
+              </Button>
 
-            <Button
-              type="submit"
-              className="w-full h-11 font-semibold text-base mt-2"
-              disabled={registerMutation.isPending}
-            >
-              {registerMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {t('auth.register')}
-            </Button>
-
-            <div className="relative my-5">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-3 text-muted-foreground text-[10px] font-medium">
+                    Or continue with
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-3 text-muted-foreground text-[10px] font-medium">
-                  Or continue with
-                </span>
+
+              <div className="w-full flex justify-center [&>div]:w-full">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  useOneTap={false}
+                  theme="outline"
+                  size="large"
+                  text="signup_with"
+                  shape="rectangular"
+                />
               </div>
-            </div>
 
-            <div className="w-full flex justify-center [&>div]:w-full">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                useOneTap={false}
-                theme="outline"
-                size="large"
-                text="signup_with"
-                shape="rectangular"
-              />
-            </div>
-
-            <div className="pt-2 text-center text-xs">
-              {t('auth.alreadyHaveAccount')}{' '}
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                {t('auth.signIn')}
-              </Link>
-            </div>
+              <div className="pt-2 text-center text-xs">
+                {t('auth.alreadyHaveAccount')}{' '}
+                <Link to="/login" className="text-primary hover:underline font-medium">
+                  {t('auth.signIn')}
+                </Link>
+              </div>
+            </form>
           </Form>
         </CardContent>
       </Card>

@@ -7,9 +7,10 @@ interface SheetProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     children: React.ReactNode;
+    className?: string;
 }
 
-export function Sheet({ open, onOpenChange, children }: SheetProps) {
+export function Sheet({ open, onOpenChange, children, className }: SheetProps) {
     if (!open) return null;
 
     return (
@@ -18,7 +19,7 @@ export function Sheet({ open, onOpenChange, children }: SheetProps) {
                 className="fixed inset-0 bg-black/50 transition-opacity"
                 onClick={() => onOpenChange(false)}
             />
-            <div className="relative w-full max-w-md bg-background shadow-xl h-full flex flex-col animate-in slide-in-from-right duration-300">
+            <div className={cn("relative w-full max-w-md bg-background shadow-xl h-full flex flex-col animate-in slide-in-from-right duration-300", className)}>
                 <Button
                     variant="ghost"
                     size="icon"
@@ -39,6 +40,10 @@ export function SheetContent({ children, className }: { children: React.ReactNod
 
 export function SheetHeader({ children, className }: { children: React.ReactNode; className?: string }) {
     return <div className={cn("flex flex-col space-y-2 text-center sm:text-left p-6 border-b", className)}>{children}</div>;
+}
+
+export function SheetDescription({ children, className }: { children: React.ReactNode; className?: string }) {
+    return <div className={cn("text-sm text-muted-foreground", className)}>{children}</div>;
 }
 
 export function SheetTitle({ children, className }: { children: React.ReactNode; className?: string }) {

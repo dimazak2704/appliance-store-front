@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from 'react-router-dom'
@@ -9,7 +9,7 @@ import { authService } from '@/features/auth/authService'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormField, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Loader2, CheckCircle2 } from 'lucide-react'
 
 export function ForgotPasswordPage() {
@@ -18,14 +18,15 @@ export function ForgotPasswordPage() {
     mutationFn: authService.forgotPassword,
   })
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ForgotPasswordFormData>({
+  // 1. Rename to 'form' to pass to <Form {...form}>
+  const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(getForgotPasswordSchema(t)),
+    defaultValues: {
+      email: '',
+    },
   })
 
+  // 2. Wrap onSubmit
   const onSubmit = (data: ForgotPasswordFormData) => {
     forgotPasswordMutation.mutate(data)
   }
@@ -54,44 +55,47 @@ export function ForgotPasswordPage() {
               </Button>
             </div>
           ) : (
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <FormField>
-                <FormLabel htmlFor="email">Email</FormLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  {...register('email')}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="name@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.email && (
-                  <FormMessage>{errors.email.message}</FormMessage>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={forgotPasswordMutation.isPending}
+                >
+                  {forgotPasswordMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Send Reset Link
+                </Button>
+
+                {forgotPasswordMutation.isError && (
+                  <FormMessage className="text-center">
+                    {forgotPasswordMutation.error instanceof Error
+                      ? forgotPasswordMutation.error.message
+                      : 'Failed to send reset link. Please try again.'}
+                  </FormMessage>
                 )}
-              </FormField>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={forgotPasswordMutation.isPending}
-              >
-                {forgotPasswordMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Send Reset Link
-              </Button>
-
-              {forgotPasswordMutation.isError && (
-                <FormMessage>
-                  {forgotPasswordMutation.error instanceof Error
-                    ? forgotPasswordMutation.error.message
-                    : 'Failed to send reset link. Please try again.'}
-                </FormMessage>
-              )}
-
-              <div className="mt-4 text-center text-sm">
-                <Link to="/login" className="text-primary hover:underline">
-                  Back to Login
-                </Link>
-              </div>
+                <div className="mt-4 text-center text-sm">
+                  <Link to="/login" className="text-primary hover:underline">
+                    Back to Login
+                  </Link>
+                </div>
+              </form>
             </Form>
           )}
         </CardContent>

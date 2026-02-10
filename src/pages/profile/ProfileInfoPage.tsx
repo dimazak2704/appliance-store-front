@@ -1,18 +1,19 @@
 import { useForm } from 'react-hook-form';
+import { formatCardNumber } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod'; // Assuming installed
-import { zodResolver } from '@hookform/resolvers/zod'; // Assuming installed
-import { toast } from 'sonner'; // Assuming installed
-import { getProfile, updateProfile } from '@/api/profile';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { getProfile, updateProfile } from '@/api/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { handleApiError } from '@/lib/errorHandler';
 
 export function ProfileInfoPage() {
-    const { i18n } = useTranslation();
-    const isUa = i18n.language === 'ua';
+    const { t } = useTranslation();
     const queryClient = useQueryClient();
 
     const { data: profile, isLoading } = useQuery({
@@ -22,7 +23,7 @@ export function ProfileInfoPage() {
 
     // Dynamic schema for localization
     const profileSchema = z.object({
-        name: z.string().min(2, isUa ? "Ім'я має містити мінімум 2 символи" : "Name must be at least 2 characters"),
+        name: z.string().min(2, t('profile.validation.nameMin')),
         email: z.string().email(),
         card: z.string().optional(),
     });
@@ -42,52 +43,62 @@ export function ProfileInfoPage() {
         mutationFn: updateProfile,
         onSuccess: (data) => {
             queryClient.setQueryData(['profile'], data);
-            toast.success(isUa ? 'Профіль оновлено успішно' : 'Profile updated successfully');
+            toast.success(t('profile.successUpdate'));
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка оновлення профілю' : 'Failed to update profile');
+        onError: (error) => {
+            handleApiError(error, {
+                setGlobalError: (message: string) => toast.error(message),
+            });
         },
     });
 
     const onSubmit = (data: ProfileFormValues) => {
         updateMutation.mutate({
             name: data.name,
-            card: data.card,
+            card: data.card?.replace(/\s/g, ''),
         });
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div>{t('buttons.loading')}</div>;
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>{isUa ? 'Особисті дані' : 'Personal Information'}</CardTitle>
-                <CardDescription>{isUa ? 'Оновіть свої особисті дані та платіжну інформацію' : 'Update your personal details and payment information'}</CardDescription>
+                <CardTitle>{t('profile.personalInfo')}</CardTitle>
+                <CardDescription>{t('profile.updateInfo')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
                     <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">{t('auth.email')}</Label>
                         <Input id="email" {...register('email')} disabled className="bg-muted" />
                         <p className="text-xs text-muted-foreground">
-                            {isUa ? 'Email не можна змінити' : 'Email cannot be changed'}
+                            {t('profile.emailNoChange')}
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="name">{isUa ? "Ім'я" : "Name"}</Label>
+                        <Label htmlFor="name">{t('auth.name')}</Label>
                         <Input id="name" {...register('name')} />
                         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="card">{isUa ? "Номер карти (Опціонально)" : "Card Number (Optional)"}</Label>
-                        <Input id="card" {...register('card')} placeholder="0000 0000 0000 0000" />
-                        {/* Basic card input, masks/formatting would be a nice addition later */}
+                        <Label htmlFor="card">{t('auth.cardNumber')}</Label>
+                        <Input
+                            id="card"
+                            {...register('card')}
+                            onChange={(e) => {
+                                e.target.value = formatCardNumber(e.target.value);
+                                register('card').onChange(e);
+                            }}
+                            placeholder={t('profile.cardPlaceholder')}
+                            maxLength={19}
+                        />
                     </div>
 
                     <Button type="submit" disabled={updateMutation.isPending}>
-                        {updateMutation.isPending ? (isUa ? 'Збереження...' : 'Saving...') : (isUa ? 'Зберегти зміни' : 'Save Changes')}
+                        {updateMutation.isPending ? t('profile.saving') : t('profile.saveChanges')}
                     </Button>
                 </form>
             </CardContent>

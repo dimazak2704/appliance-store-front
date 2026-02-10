@@ -25,7 +25,7 @@ export interface ApplianceDto {
 export interface ApplianceParams {
     page?: number;
     size?: number;
-    sort?: string;
+    sort?: string | string[];
     categoryId?: number;
     manufacturerIds?: string; // Comma separated IDs
     name?: string;

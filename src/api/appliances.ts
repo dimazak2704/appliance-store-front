@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 export interface ApplianceDto {
     id: number;
@@ -47,13 +47,13 @@ export interface PageResponse<T> {
 const API_URL = 'http://localhost:8080/api';
 
 export const getAppliances = async (params: ApplianceParams): Promise<PageResponse<ApplianceDto>> => {
-    const response = await axios.get<PageResponse<ApplianceDto>>(`${API_URL}/appliances`, {
+    const response = await api.get<PageResponse<ApplianceDto>>(`${API_URL}/appliances`, {
         params,
     });
     return response.data;
 };
 
 export const getApplianceById = async (id: number): Promise<ApplianceDto> => {
-    const response = await axios.get<ApplianceDto>(`${API_URL}/appliances/${id}`);
+    const response = await api.get<ApplianceDto>(`${API_URL}/appliances/${id}`);
     return response.data;
 };

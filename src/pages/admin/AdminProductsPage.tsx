@@ -100,9 +100,7 @@ export function AdminProductsPage() {
             setDeletingProductId(null);
         },
         onError: (error) => {
-            handleApiError(error, {
-                setGlobalError: (message: string) => toast.error(message),
-            });
+            handleApiError(error);
             setDeletingProductId(null);
         },
     });

@@ -14,6 +14,7 @@ import {
     ApplianceRequestDto
 } from '@/api/admin/products';
 import { getCategories, getManufacturers } from '@/api/dictionaries';
+import { handleApiError } from '@/lib/errorHandler';
 import { ApplianceDto, getApplianceById } from '@/api/appliances';
 
 import {
@@ -87,7 +88,7 @@ export function ProductFormSheet({ open, onOpenChange, productToEdit }: ProductF
 
     // ... (inside component)
 
-    const { data: fullProductDetails, isLoading: isLoadingDetails } = useQuery({
+    const { data: fullProductDetails } = useQuery({
         queryKey: ['product', productToEdit?.id],
         queryFn: () => getApplianceById(productToEdit!.id),
         enabled: !!productToEdit,
@@ -129,8 +130,8 @@ export function ProductFormSheet({ open, onOpenChange, productToEdit }: ProductF
 
     const uploadImageMutation = useMutation({
         mutationFn: ({ id, file }: { id: number; file: File }) => uploadProductImage(id, file),
-        onError: () => {
-            toast.error(isUa ? 'Помилка завантаження зображення' : 'Failed to upload image');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.uploadImageError' });
         },
     });
 
@@ -151,8 +152,8 @@ export function ProductFormSheet({ open, onOpenChange, productToEdit }: ProductF
             queryClient.invalidateQueries({ queryKey: ['admin-products'] });
             onOpenChange(false);
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка створення товару' : 'Failed to create product');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.createProductError' });
         },
     });
 
@@ -173,8 +174,8 @@ export function ProductFormSheet({ open, onOpenChange, productToEdit }: ProductF
             queryClient.invalidateQueries({ queryKey: ['admin-products'] });
             onOpenChange(false);
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка оновлення товару' : 'Failed to update product');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.updateProductError' });
         },
     });
 
@@ -335,7 +336,7 @@ export function ProductFormSheet({ open, onOpenChange, productToEdit }: ProductF
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{isUa ? 'Ціна' : 'Price'}</FormLabel>
-                                        <FormControl><Input type="number" {...field} /></FormControl>
+                                        <FormControl><Input type="number" min="0" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -349,7 +350,7 @@ export function ProductFormSheet({ open, onOpenChange, productToEdit }: ProductF
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{isUa ? 'Кількість' : 'Stock'}</FormLabel>
-                                        <FormControl><Input type="number" {...field} /></FormControl>
+                                        <FormControl><Input type="number" min="0" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -384,7 +385,7 @@ export function ProductFormSheet({ open, onOpenChange, productToEdit }: ProductF
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>{isUa ? 'Потужність (Вт)' : 'Power (W)'}</FormLabel>
-                                    <FormControl><Input type="number" {...field} /></FormControl>
+                                    <FormControl><Input type="number" min="0" {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}

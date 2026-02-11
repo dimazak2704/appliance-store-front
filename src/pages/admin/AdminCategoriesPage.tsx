@@ -15,6 +15,7 @@ import {
     CategoryDto,
     CategoryRequestDto
 } from '@/api/dictionaries';
+import { handleApiError } from '@/lib/errorHandler';
 
 import {
     Table,
@@ -90,8 +91,8 @@ export function AdminCategoriesPage() {
             queryClient.invalidateQueries({ queryKey: ['categories'] });
             handleCloseDialog();
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка створення' : 'Failed to create');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.createError' });
         },
     });
 
@@ -102,8 +103,8 @@ export function AdminCategoriesPage() {
             queryClient.invalidateQueries({ queryKey: ['categories'] });
             handleCloseDialog();
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка оновлення' : 'Failed to update');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.updateError' });
         },
     });
 
@@ -114,8 +115,8 @@ export function AdminCategoriesPage() {
             queryClient.invalidateQueries({ queryKey: ['categories'] });
             setDeletingCategoryId(null);
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка видалення' : 'Failed to delete');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.deleteError' });
             setDeletingCategoryId(null);
         },
     });

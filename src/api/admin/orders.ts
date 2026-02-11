@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 import { OrderHistoryDto } from '@/api/client';
 
 const API_URL = 'http://localhost:8080/api/admin/orders';
@@ -43,16 +43,14 @@ export const getAdminOrders = async (params: OrderParams = {}): Promise<Page<Adm
     if (status && status !== 'ALL') queryParams.status = status;
     if (deliveryType && deliveryType !== 'ALL') queryParams.deliveryType = deliveryType;
 
-    const response = await axios.get<Page<AdminOrderDto>>(`${API_URL}`, {
+    const response = await api.get<Page<AdminOrderDto>>(`${API_URL}`, {
         headers: getAuthHeader(),
         params: queryParams,
-        // ДОДАЙ ЦЕЙ БЛОК:
         paramsSerializer: (params) => {
             const searchParams = new URLSearchParams();
             Object.keys(params).forEach(key => {
                 const value = params[key];
                 if (Array.isArray(value)) {
-                    // Якщо це масив (sort), додаємо кожен елемент окремо без дужок []
                     value.forEach(val => searchParams.append(key, val));
                 } else if (value !== undefined && value !== null) {
                     searchParams.append(key, value.toString());
@@ -65,7 +63,7 @@ export const getAdminOrders = async (params: OrderParams = {}): Promise<Page<Adm
 };
 
 export const updateOrderStatus = async (id: number, newStatus: string): Promise<void> => {
-    await axios.patch(`${API_URL}/${id}/status`, null, {
+    await api.patch(`${API_URL}/${id}/status`, null, {
         headers: getAuthHeader(),
         params: { newStatus }
     });

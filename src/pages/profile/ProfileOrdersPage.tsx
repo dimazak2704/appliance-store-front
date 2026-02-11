@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ChevronDown, ChevronUp, Package, CheckCircle, Truck, XCircle } from 'lucide-react';
 import { getMyOrders, cancelOrder, OrderHistoryDto, OrderStatus } from '@/api/client';
+import { handleApiError } from '@/lib/errorHandler';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,12 +45,28 @@ export function ProfileOrdersPage() {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold tracking-tight">{isUa ? 'Мої замовлення' : 'My Orders'}</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-full text-primary">
+                        <Package className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight">{isUa ? 'Мої замовлення' : 'My Orders'}</h2>
+                        <p className="text-muted-foreground text-sm">
+                            {isUa ? 'Історія ваших покупок та статус доставки' : 'Track your purchases and delivery status'}
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             <Tabs value={statusFilter} onValueChange={setStatusFilter} className="w-full">
-                <TabsList className="w-full justify-start overflow-x-auto">
+                <TabsList className="w-full justify-start overflow-x-auto bg-transparent p-0 border-b h-auto rounded-none">
                     {statusTabs.map((tab) => (
-                        <TabsTrigger key={tab.value} value={tab.value}>
+                        <TabsTrigger
+                            key={tab.value}
+                            value={tab.value}
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                        >
                             {tab.label}
                         </TabsTrigger>
                     ))}
@@ -86,8 +103,8 @@ function OrderCard({ order, isUa }: { order: OrderHistoryDto, isUa: boolean }) {
             toast.success(isUa ? 'Замовлення успішно скасовано' : 'Order canceled successfully');
             queryClient.invalidateQueries({ queryKey: ['my-orders'] });
         },
-        onError: () => {
-            toast.error(isUa ? 'Не вдалося скасувати замовлення' : 'Failed to cancel order');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.cancelOrderError' });
         },
     });
 

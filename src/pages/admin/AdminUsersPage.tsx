@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Loader2, Plus, Pencil, Trash2, Ban, CheckCircle, Search, Shield, ShieldAlert, ShieldCheck,
-    ChevronLeft, ChevronRight
+    ChevronLeft, ChevronRight, Key
 } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -36,9 +36,10 @@ import {
 import { MoreHorizontal } from "lucide-react";
 
 import {
-    getAllUsers, createUser, updateUser, updateUserRole, toggleUserStatus, deleteUser,
+    getAllUsers, createUser, updateUser, updateUserRole, toggleUserStatus, deleteUser, resetUserPassword,
     AdminUserDto, UserCreateRequest, UserUpdateRequest
 } from '@/api/admin/users';
+import { handleApiError } from '@/lib/errorHandler';
 
 // Schemas
 // Use z.string() for inputs to match form behavior, handle validation via refine
@@ -73,6 +74,14 @@ const updateUserFormSchema = z.object({
     path: ["card"],
 });
 
+const resetPasswordSchema = z.object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"],
+});
+
 
 export function AdminUsersPage() {
     const { i18n } = useTranslation();
@@ -93,6 +102,7 @@ export function AdminUsersPage() {
     const [editingUser, setEditingUser] = useState<AdminUserDto | null>(null);
     const [roleChangingUser, setRoleChangingUser] = useState<AdminUserDto | null>(null);
     const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
+    const [resetPasswordUser, setResetPasswordUser] = useState<AdminUserDto | null>(null);
 
     // Debounce Search
     useEffect(() => {
@@ -134,7 +144,7 @@ export function AdminUsersPage() {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
             setIsCreateOpen(false);
         },
-        onError: () => toast.error(isUa ? 'Помилка створення' : 'Failed to create user')
+        onError: (error) => handleApiError(error, { fallbackMessage: 'errors.createError' })
     });
 
     const updateMutation = useMutation({
@@ -144,7 +154,7 @@ export function AdminUsersPage() {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
             setEditingUser(null);
         },
-        onError: () => toast.error(isUa ? 'Помилка оновлення' : 'Failed to update user')
+        onError: (error) => handleApiError(error, { fallbackMessage: 'errors.updateError' })
     });
 
     const roleMutation = useMutation({
@@ -154,7 +164,7 @@ export function AdminUsersPage() {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
             setRoleChangingUser(null);
         },
-        onError: () => toast.error(isUa ? 'Помилка зміни ролі' : 'Failed to update role')
+        onError: (error) => handleApiError(error, { fallbackMessage: 'errors.roleUpdateError' })
     });
 
     const statusMutation = useMutation({
@@ -163,7 +173,7 @@ export function AdminUsersPage() {
             toast.success(isUa ? (vars.enabled ? 'Розблоковано' : 'Заблоковано') : (vars.enabled ? 'User activated' : 'User banned'));
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
         },
-        onError: () => toast.error(isUa ? 'Помилка зміни статусу' : 'Failed to update status')
+        onError: (error) => handleApiError(error, { fallbackMessage: 'errors.statusUpdateError' })
     });
 
     const deleteMutation = useMutation({
@@ -173,7 +183,16 @@ export function AdminUsersPage() {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
             setDeletingUserId(null);
         },
-        onError: () => toast.error(isUa ? 'Помилка видалення' : 'Failed to delete user')
+        onError: (error) => handleApiError(error, { fallbackMessage: 'errors.deleteError' })
+    });
+
+    const resetPasswordMutation = useMutation({
+        mutationFn: (vars: { id: number; password: string }) => resetUserPassword(vars.id, vars.password),
+        onSuccess: () => {
+            toast.success(isUa ? 'Пароль змінено' : 'Password changed');
+            setResetPasswordUser(null);
+        },
+        onError: (error) => handleApiError(error, { fallbackMessage: 'errors.passwordResetError' })
     });
 
     // Forms
@@ -197,6 +216,11 @@ export function AdminUsersPage() {
         defaultValues: { name: '', email: '', card: '' }
     });
 
+    const resetPasswordForm = useForm<z.infer<typeof resetPasswordSchema>>({
+        resolver: zodResolver(resetPasswordSchema),
+        defaultValues: { password: '', confirmPassword: '' }
+    });
+
     useEffect(() => {
         if (editingUser) {
             updateForm.reset({
@@ -207,26 +231,45 @@ export function AdminUsersPage() {
         }
     }, [editingUser, updateForm]);
 
+    useEffect(() => {
+        if (resetPasswordUser) {
+            resetPasswordForm.reset();
+        }
+    }, [resetPasswordUser, resetPasswordForm]);
+
     const onCreateSubmit = (values: z.infer<typeof createUserFormSchema>) => {
         // Prepare DTO
+        // Strict conditional check: ONLY if role is CLIENT do we send card
+        const cardValue = (values.role === 'CLIENT' && values.card && values.card.trim() !== '') ? values.card : undefined;
+
         const submitValues: UserCreateRequest = {
             name: values.name,
             email: values.email,
             password: values.password,
             role: values.role,
-            card: (values.role === 'CLIENT' && values.card && values.card.trim() !== '') ? values.card : undefined
+            card: cardValue
         };
         createMutation.mutate(submitValues);
     };
 
     const onUpdateSubmit = (values: z.infer<typeof updateUserFormSchema>) => {
         if (editingUser) {
+            // Strict conditional check: ONLY if CURRENT role is CLIENT do we send card
+            // Note: If user is EMPLOYEE/ADMIN, editingUser.role will reflect that, so we ensure card is undefined
+            const cardValue = (editingUser.role === 'CLIENT' && values.card && values.card.trim() !== '') ? values.card : undefined;
+
             const submitValues: UserUpdateRequest = {
                 name: values.name,
                 email: values.email,
-                card: (values.card && values.card.trim() !== '') ? values.card : undefined
+                card: cardValue
             };
             updateMutation.mutate({ id: editingUser.id, data: submitValues });
+        }
+    };
+
+    const onResetPasswordSubmit = (values: z.infer<typeof resetPasswordSchema>) => {
+        if (resetPasswordUser) {
+            resetPasswordMutation.mutate({ id: resetPasswordUser.id, password: values.password });
         }
     };
 
@@ -329,34 +372,45 @@ export function AdminUsersPage() {
                                             </TableCell>
                                             <TableCell>{user.card ? `•••• ${user.card.slice(-4)}` : '-'}</TableCell>
                                             <TableCell className="text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" className="h-8 w-8 p-0">
-                                                            <span className="sr-only">Open menu</span>
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem onClick={() => setEditingUser(user)}>
-                                                            <Pencil className="mr-2 h-4 w-4" /> {isUa ? 'Редагувати' : 'Edit'}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => setRoleChangingUser(user)}>
-                                                            <Shield className="mr-2 h-4 w-4" /> {isUa ? 'Змінити роль' : 'Change Role'}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem onClick={() => statusMutation.mutate({ id: user.id, enabled: !user.enabled })}>
-                                                            {user.enabled ? (
-                                                                <><Ban className="mr-2 h-4 w-4 text-red-500" /> <span className="text-red-500">{isUa ? 'Заблокувати' : 'Ban'}</span></>
-                                                            ) : (
-                                                                <><CheckCircle className="mr-2 h-4 w-4 text-green-500" /> <span className="text-green-500">{isUa ? 'Активувати' : 'Activate'}</span></>
-                                                            )}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem onClick={() => setDeletingUserId(user.id)} className="text-red-600 focus:text-red-600">
-                                                            <Trash2 className="mr-2 h-4 w-4" /> {isUa ? 'Видалити' : 'Delete'}
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <div className="flex justify-end items-center gap-1">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0"
+                                                        onClick={() => setResetPasswordUser(user)}
+                                                        title={isUa ? 'Змінити пароль' : 'Reset Password'}
+                                                    >
+                                                        <Key className="h-4 w-4" />
+                                                    </Button>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                                <span className="sr-only">Open menu</span>
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem onClick={() => setEditingUser(user)}>
+                                                                <Pencil className="mr-2 h-4 w-4" /> {isUa ? 'Редагувати' : 'Edit'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => setRoleChangingUser(user)}>
+                                                                <Shield className="mr-2 h-4 w-4" /> {isUa ? 'Змінити роль' : 'Change Role'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem onClick={() => statusMutation.mutate({ id: user.id, enabled: !user.enabled })}>
+                                                                {user.enabled ? (
+                                                                    <><Ban className="mr-2 h-4 w-4 text-red-500" /> <span className="text-red-500">{isUa ? 'Заблокувати' : 'Ban'}</span></>
+                                                                ) : (
+                                                                    <><CheckCircle className="mr-2 h-4 w-4 text-green-500" /> <span className="text-green-500">{isUa ? 'Активувати' : 'Activate'}</span></>
+                                                                )}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem onClick={() => setDeletingUserId(user.id)} className="text-red-600 focus:text-red-600">
+                                                                <Trash2 className="mr-2 h-4 w-4" /> {isUa ? 'Видалити' : 'Delete'}
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -530,6 +584,50 @@ export function AdminUsersPage() {
                                 <Button type="submit" disabled={updateMutation.isPending}>
                                     {updateMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     {isUa ? 'Зберегти' : 'Save'}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog>
+
+            {/* RESET PASSWORD Dialog */}
+            <Dialog open={!!resetPasswordUser} onOpenChange={(open) => !open && setResetPasswordUser(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{isUa ? 'Змінити пароль' : 'Reset Password'}</DialogTitle>
+                        <DialogDescription>
+                            {isUa ? `Введіть новий пароль для користувача ${resetPasswordUser?.name}` : `Enter new password for user ${resetPasswordUser?.name}`}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Form {...resetPasswordForm}>
+                        <form onSubmit={resetPasswordForm.handleSubmit(onResetPasswordSubmit)} className="space-y-4">
+                            <FormField
+                                control={resetPasswordForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{isUa ? 'Новий пароль' : 'New Password'}</FormLabel>
+                                        <FormControl><Input type="password" {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={resetPasswordForm.control}
+                                name="confirmPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{isUa ? 'Підтвердіть пароль' : 'Confirm Password'}</FormLabel>
+                                        <FormControl><Input type="password" {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <DialogFooter>
+                                <Button type="submit" disabled={resetPasswordMutation.isPending}>
+                                    {resetPasswordMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {isUa ? 'Змінити' : 'Reset Password'}
                                 </Button>
                             </DialogFooter>
                         </form>

@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Loader2, Eye } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 import { getAdminOrders, updateOrderStatus, AdminOrderDto } from '@/api/admin/orders';
+import { handleApiError } from '@/lib/errorHandler';
 import {
     Table,
     TableBody,
@@ -79,8 +80,8 @@ export function AdminOrdersPage() {
             toast.success(isUa ? 'Статус оновлено' : 'Status updated successfully');
             queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка оновлення статусу' : 'Failed to update status');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.statusUpdateError' });
         },
     });
 

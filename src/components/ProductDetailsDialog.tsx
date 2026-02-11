@@ -95,11 +95,11 @@ export function ProductDetailsDialog({ open, onOpenChange, productId }: ProductD
                 {product && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Left Column: Image */}
-                        <div className="relative flex items-center justify-center bg-gray-50 rounded-lg p-6">
+                        <div className="relative flex items-center justify-center bg-white rounded-lg p-6 h-[400px] md:h-[500px] w-full">
                             <img
                                 src={imageUrl}
                                 alt={isUa ? product.nameUa : product.nameEn}
-                                className="max-h-[500px] object-contain"
+                                className="w-full h-full object-contain"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = 'https://placehold.co/600?text=No+Image';
                                 }}

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const API_URL = 'http://localhost:8080/api/admin/users';
 
@@ -52,7 +52,7 @@ export const getAllUsers = async (
     if (role && role !== 'ALL') params.role = role;
     if (enabled !== undefined) params.enabled = enabled;
 
-    const response = await axios.get<PageResponse<AdminUserDto>>(API_URL, {
+    const response = await api.get<PageResponse<AdminUserDto>>(API_URL, {
         headers: getAuthHeader(),
         params,
         paramsSerializer: {
@@ -63,34 +63,44 @@ export const getAllUsers = async (
 };
 
 export const createUser = async (data: UserCreateRequest): Promise<AdminUserDto> => {
-    const response = await axios.post<AdminUserDto>(API_URL, data, {
+    const response = await api.post<AdminUserDto>(API_URL, data, {
         headers: getAuthHeader()
     });
     return response.data;
 };
 
 export const updateUser = async (id: number, data: UserUpdateRequest): Promise<AdminUserDto> => {
-    const response = await axios.put<AdminUserDto>(`${API_URL}/${id}`, data, {
+    const response = await api.put<AdminUserDto>(`${API_URL}/${id}`, data, {
         headers: getAuthHeader()
     });
     return response.data;
 };
 
 export const updateUserRole = async (id: number, role: string): Promise<void> => {
-    await axios.put(`${API_URL}/${id}/role`, { role }, {
+    await api.put(`${API_URL}/${id}/role`, { role }, {
         headers: getAuthHeader()
     });
 };
 
 export const toggleUserStatus = async (id: number, enabled: boolean): Promise<void> => {
-    await axios.put(`${API_URL}/${id}/status`, null, {
+    await api.put(`${API_URL}/${id}/status`, null, {
         headers: getAuthHeader(),
         params: { enabled }
     });
 };
 
 export const deleteUser = async (id: number): Promise<void> => {
-    await axios.delete(`${API_URL}/${id}`, {
+    await api.delete(`${API_URL}/${id}`, {
         headers: getAuthHeader()
     });
 };
+
+export const resetUserPassword = async (id: number, password: string): Promise<void> => {
+    await api.put(`${API_URL}/${id}/password-reset`, password, {
+        headers: {
+            ...getAuthHeader(),
+            'Content-Type': 'application/json'
+        }
+    });
+};
+

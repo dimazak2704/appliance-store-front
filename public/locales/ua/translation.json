@@ -57,7 +57,22 @@
     "enterName": "Введіть ваше ім'я",
     "enterEmail": "name@example.com",
     "setPassword": "Встановити пароль",
-    "setPasswordDescription": "Будь ласка, встановіть пароль для завершення реєстрації через Google."
+    "setPasswordDescription": "Будь ласка, встановіть пароль для завершення реєстрації через Google.",
+    "resetPasswordTitle": "Відновлення паролю",
+    "resetPasswordDesc": "Введіть ваш новий пароль нижче.",
+    "newPassword": "Новий пароль",
+    "newPasswordPlaceholder": "Введіть новий пароль (мін. 8 символів)",
+    "resetPasswordButton": "Змінити пароль",
+    "resetPasswordSuccess": "Пароль успішно змінено! Перенаправлення на вхід...",
+    "resetPasswordError": "Не вдалося змінити пароль. Спробуйте ще раз.",
+    "backToLogin": "Повернутися до входу",
+    "confirmEmailTitle": "Підтвердження електронної пошти",
+    "confirmEmailDesc": "Будь ласка, зачекайте, поки ми підтвердимо вашу електронну адресу...",
+    "confirmEmailLoading": "Підтвердження електронної пошти...",
+    "confirmEmailSuccess": "Електронну пошту успішно підтверджено! Перенаправлення на вхід...",
+    "confirmEmailError": "Не вдалося підтвердити електронну пошту. Посилання може бути недійсним або застарілим.",
+    "invalidTokenTitle": "Недійсний токен",
+    "invalidTokenDesc": "Посилання для підтвердження недійсне або застаріле."
   },
   "buttons": {
     "submit": "Відправити",
@@ -97,6 +112,9 @@
     },
     "token": {
       "required": "Токен є обов'язковим"
+    },
+    "phone": {
+      "required": "Телефон обов'язковий (мінімум 10 цифр)"
     }
   },
   "admin": {

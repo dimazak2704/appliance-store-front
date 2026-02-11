@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const API_URL = 'http://localhost:8080/api';
 
@@ -21,22 +21,22 @@ export interface CategoryRequestDto {
 }
 
 export const getCategories = async (): Promise<CategoryDto[]> => {
-    const response = await axios.get<CategoryDto[]>(`${API_URL}/categories`);
+    const response = await api.get<CategoryDto[]>(`${API_URL}/categories`);
     return response.data;
 };
 
 export const createCategory = async (data: CategoryRequestDto): Promise<CategoryDto> => {
-    const response = await axios.post<CategoryDto>(`${API_URL}/categories`, data, { headers: getAuthHeader() });
+    const response = await api.post<CategoryDto>(`${API_URL}/categories`, data, { headers: getAuthHeader() });
     return response.data;
 };
 
 export const updateCategory = async (id: number, data: CategoryRequestDto): Promise<CategoryDto> => {
-    const response = await axios.put<CategoryDto>(`${API_URL}/categories/${id}`, data, { headers: getAuthHeader() });
+    const response = await api.put<CategoryDto>(`${API_URL}/categories/${id}`, data, { headers: getAuthHeader() });
     return response.data;
 };
 
 export const deleteCategory = async (id: number): Promise<void> => {
-    await axios.delete(`${API_URL}/categories/${id}`, { headers: getAuthHeader() });
+    await api.delete(`${API_URL}/categories/${id}`, { headers: getAuthHeader() });
 };
 
 // --- Manufacturers ---
@@ -51,20 +51,20 @@ export interface ManufacturerRequestDto {
 }
 
 export const getManufacturers = async (): Promise<ManufacturerDto[]> => {
-    const response = await axios.get<ManufacturerDto[]>(`${API_URL}/manufacturers`);
+    const response = await api.get<ManufacturerDto[]>(`${API_URL}/manufacturers`);
     return response.data;
 };
 
 export const createManufacturer = async (data: ManufacturerRequestDto): Promise<ManufacturerDto> => {
-    const response = await axios.post<ManufacturerDto>(`${API_URL}/manufacturers`, data, { headers: getAuthHeader() });
+    const response = await api.post<ManufacturerDto>(`${API_URL}/manufacturers`, data, { headers: getAuthHeader() });
     return response.data;
 };
 
 export const updateManufacturer = async (id: number, data: ManufacturerRequestDto): Promise<ManufacturerDto> => {
-    const response = await axios.put<ManufacturerDto>(`${API_URL}/manufacturers/${id}`, data, { headers: getAuthHeader() });
+    const response = await api.put<ManufacturerDto>(`${API_URL}/manufacturers/${id}`, data, { headers: getAuthHeader() });
     return response.data;
 };
 
 export const deleteManufacturer = async (id: number): Promise<void> => {
-    await axios.delete(`${API_URL}/manufacturers/${id}`, { headers: getAuthHeader() });
+    await api.delete(`${API_URL}/manufacturers/${id}`, { headers: getAuthHeader() });
 };

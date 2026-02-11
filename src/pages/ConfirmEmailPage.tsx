@@ -1,12 +1,14 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { authService } from '@/features/auth/authService'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
 
 export function ConfirmEmailPage() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const token = searchParams.get('token')
@@ -35,14 +37,14 @@ export function ConfirmEmailPage() {
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Invalid Token</CardTitle>
+            <CardTitle>{t('auth.invalidTokenTitle', 'Invalid Token')}</CardTitle>
             <CardDescription>
-              The confirmation link is invalid or expired.
+              {t('auth.invalidTokenDesc', 'The confirmation link is invalid or expired.')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={() => navigate('/login')} className="w-full">
-              Go to Login
+              {t('auth.goToLogin', 'Go to Login')}
             </Button>
           </CardContent>
         </Card>
@@ -54,9 +56,9 @@ export function ConfirmEmailPage() {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Confirming Email</CardTitle>
+          <CardTitle>{t('auth.confirmEmailTitle', 'Confirming Email')}</CardTitle>
           <CardDescription>
-            Please wait while we confirm your email address...
+            {t('auth.confirmEmailDesc', 'Please wait while we confirm your email address...')}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center space-y-4">
@@ -64,7 +66,7 @@ export function ConfirmEmailPage() {
             <>
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground">
-                Confirming your email...
+                {t('auth.confirmEmailLoading', 'Confirming your email...')}
               </p>
             </>
           )}
@@ -73,7 +75,7 @@ export function ConfirmEmailPage() {
             <>
               <CheckCircle2 className="h-12 w-12 text-green-500" />
               <p className="text-sm text-muted-foreground">
-                Email confirmed successfully! Redirecting to login...
+                {t('auth.confirmEmailSuccess', 'Email confirmed successfully! Redirecting to login...')}
               </p>
             </>
           )}
@@ -81,13 +83,13 @@ export function ConfirmEmailPage() {
           {confirmEmailMutation.isError && (
             <>
               <XCircle className="h-12 w-12 text-destructive" />
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-center text-destructive">
                 {confirmEmailMutation.error instanceof Error
                   ? confirmEmailMutation.error.message
-                  : 'Failed to confirm email. The link may be invalid or expired.'}
+                  : t('auth.confirmEmailError', 'Failed to confirm email. The link may be invalid or expired.')}
               </p>
               <Button onClick={() => navigate('/login')} className="w-full">
-                Go to Login
+                {t('auth.goToLogin', 'Go to Login')}
               </Button>
             </>
           )}

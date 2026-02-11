@@ -6,9 +6,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { TriangleAlert } from 'lucide-react';
 import { getCart, checkout, DeliveryType } from '@/api/cart';
+import { handleApiError } from '@/lib/errorHandler';
 import { getProfile } from '@/api/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +40,7 @@ export function CheckoutPage() {
     const [selectedDelivery, setSelectedDelivery] = useState<DeliveryType>('SELF_PICKUP');
 
     const checkoutSchema = z.object({
-        phone: z.string().min(10, isUa ? 'Телефон обов\'язковий (мінімум 10 цифр)' : 'Phone number is required (min 10 digits)'),
+        phone: z.string().min(10, t('validation.phone.required', 'Phone number is required (min 10 digits)')),
         address: z.string().optional(),
     });
 
@@ -61,8 +61,7 @@ export function CheckoutPage() {
         },
         onError: (error: any) => {
             console.error('Checkout failed:', error);
-            const errorMessage = error.response?.data?.message || (isUa ? 'Помилка оформлення замовлення' : 'Checkout failed');
-            toast.error(errorMessage);
+            handleApiError(error, { fallbackMessage: 'errors.checkoutError' });
         },
     });
 

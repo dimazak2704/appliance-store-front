@@ -66,9 +66,9 @@ export function ResetPasswordPage() {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
+          <CardTitle>{t('auth.resetPasswordTitle', 'Reset Password')}</CardTitle>
           <CardDescription>
-            Enter your new password below.
+            {t('auth.resetPasswordDesc', 'Enter your new password below.')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -77,7 +77,7 @@ export function ResetPasswordPage() {
               <div className="flex flex-col items-center justify-center space-y-2">
                 <CheckCircle2 className="h-12 w-12 text-green-500" />
                 <p className="text-sm text-center text-muted-foreground">
-                  Password reset successfully! Redirecting to login...
+                  {t('auth.resetPasswordSuccess', 'Password reset successfully! Redirecting to login...')}
                 </p>
               </div>
             </div>
@@ -89,11 +89,11 @@ export function ResetPasswordPage() {
                   name="newPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>New Password</FormLabel>
+                      <FormLabel>{t('auth.newPassword', 'New Password')}</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter your new password (min 8 characters)"
+                          placeholder={t('auth.newPasswordPlaceholder', 'Enter your new password (min 8 characters)')}
                           {...field}
                         />
                       </FormControl>
@@ -110,20 +110,20 @@ export function ResetPasswordPage() {
                   {resetPasswordMutation.isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Reset Password
+                  {t('auth.resetPasswordButton', 'Reset Password')}
                 </Button>
 
                 {resetPasswordMutation.isError && (
                   <FormMessage className="text-center">
                     {resetPasswordMutation.error instanceof Error
                       ? resetPasswordMutation.error.message
-                      : 'Failed to reset password. Please try again.'}
+                      : t('auth.resetPasswordError', 'Failed to reset password. Please try again.')}
                   </FormMessage>
                 )}
 
                 <div className="mt-4 text-center text-sm">
                   <Link to="/login" className="text-primary hover:underline">
-                    Back to Login
+                    {t('auth.backToLogin', 'Back to Login')}
                   </Link>
                 </div>
               </form>

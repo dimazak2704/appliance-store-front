@@ -71,10 +71,8 @@ export function ProfileLayout() {
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 bg-background min-h-[500px]">
-                    <div className="bg-card rounded-xl border shadow-sm p-1"> {/* Improved styling */}
-                        <Outlet />
-                    </div>
+                <main className="flex-1 min-h-[500px]">
+                    <Outlet />
                 </main>
             </div>
         </div>

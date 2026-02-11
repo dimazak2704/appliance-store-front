@@ -67,11 +67,11 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
 
     return (
         <Card
-            className={`h-full flex flex-col hover:shadow-lg transition-shadow duration-200 ${onClick ? 'cursor-pointer' : ''}`}
+            className={`h-full flex flex-col bg-white hover:shadow-lg transition-shadow duration-200 ${onClick ? 'cursor-pointer' : ''}`}
             onClick={onClick}
         >
             <CardHeader className="p-0">
-                <div className="aspect-square relative overflow-hidden rounded-t-lg bg-gray-100 dark:bg-gray-800">
+                <div className="aspect-square relative overflow-hidden rounded-t-lg bg-white dark:bg-gray-800">
                     {/* Use a placeholder if image fails or for better UX */}
                     <img
                         src={imageUrl}

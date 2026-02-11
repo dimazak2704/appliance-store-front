@@ -57,7 +57,22 @@
     "enterName": "Enter your name",
     "enterEmail": "name@example.com",
     "setPassword": "Set Your Password",
-    "setPasswordDescription": "Please set a password to complete your Google registration."
+    "setPasswordDescription": "Please set a password to complete your Google registration.",
+    "resetPasswordTitle": "Reset Password",
+    "resetPasswordDesc": "Enter your new password below.",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter your new password (min 8 characters)",
+    "resetPasswordButton": "Reset Password",
+    "resetPasswordSuccess": "Password reset successfully! Redirecting to login...",
+    "resetPasswordError": "Failed to reset password. Please try again.",
+    "backToLogin": "Back to Login",
+    "confirmEmailTitle": "Confirming Email",
+    "confirmEmailDesc": "Please wait while we confirm your email address...",
+    "confirmEmailLoading": "Confirming your email...",
+    "confirmEmailSuccess": "Email confirmed successfully! Redirecting to login...",
+    "confirmEmailError": "Failed to confirm email. The link may be invalid or expired.",
+    "invalidTokenTitle": "Invalid Token",
+    "invalidTokenDesc": "The confirmation link is invalid or expired."
   },
   "buttons": {
     "submit": "Submit",
@@ -97,6 +112,9 @@
     },
     "token": {
       "required": "Token is required"
+    },
+    "phone": {
+      "required": "Phone number is required (min 10 digits)"
     }
   },
   "admin": {

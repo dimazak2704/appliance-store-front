@@ -15,6 +15,7 @@ import {
     ManufacturerDto,
     ManufacturerRequestDto
 } from '@/api/dictionaries';
+import { handleApiError } from '@/lib/errorHandler';
 
 import {
     Table,
@@ -88,8 +89,8 @@ export function AdminManufacturersPage() {
             queryClient.invalidateQueries({ queryKey: ['manufacturers'] });
             handleCloseDialog();
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка створення' : 'Failed to create');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.createError' });
         },
     });
 
@@ -100,8 +101,8 @@ export function AdminManufacturersPage() {
             queryClient.invalidateQueries({ queryKey: ['manufacturers'] });
             handleCloseDialog();
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка оновлення' : 'Failed to update');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.updateError' });
         },
     });
 
@@ -112,8 +113,8 @@ export function AdminManufacturersPage() {
             queryClient.invalidateQueries({ queryKey: ['manufacturers'] });
             setDeletingManufacturerId(null);
         },
-        onError: () => {
-            toast.error(isUa ? 'Помилка видалення' : 'Failed to delete');
+        onError: (error) => {
+            handleApiError(error, { fallbackMessage: 'errors.deleteError' });
             setDeletingManufacturerId(null);
         },
     });

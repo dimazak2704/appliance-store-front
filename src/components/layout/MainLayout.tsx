@@ -42,12 +42,12 @@ export function MainLayout({ children }: MainLayoutProps) {
     <div className="min-h-screen flex flex-col">
       <CartDrawer />
       <Toaster />
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="border-b bg-slate-900 text-slate-50 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Left: Brand */}
             <Link to="/" className="flex items-center">
-              <span className="text-xl font-bold text-primary">{t('navbar.brand')}</span>
+              <span className="text-xl font-bold text-white tracking-tight">{t('navbar.brand')}</span>
             </Link>
 
             {/* Right: Auth buttons or user info */}
@@ -58,20 +58,20 @@ export function MainLayout({ children }: MainLayoutProps) {
                   <Button
                     variant="ghost"
                     asChild
-                    className="hidden sm:inline-flex"
+                    className="hidden sm:inline-flex text-slate-300 hover:text-white hover:bg-slate-800"
                   >
                     <Link to="/login">{t('navbar.login')}</Link>
                   </Button>
-                  <Button asChild>
+                  <Button asChild className="bg-white text-slate-900 hover:bg-slate-100">
                     <Link to="/register">{t('navbar.signUp')}</Link>
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" size="icon" className="relative" onClick={openCart}>
+                  <Button variant="ghost" size="icon" className="relative text-slate-300 hover:text-white hover:bg-slate-800" onClick={openCart}>
                     <ShoppingCart className="h-5 w-5" />
                     {cartItemCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] text-white">
                         {cartItemCount}
                       </span>
                     )}
@@ -79,32 +79,32 @@ export function MainLayout({ children }: MainLayoutProps) {
 
                   {(isAuthenticated && (role === 'EMPLOYEE' || role === 'ADMIN')) && (
                     <div className="hidden sm:flex items-center gap-1">
-                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800" asChild>
                         <Link to="/admin/orders">
                           <ClipboardList className="h-5 w-5" />
                           <span className="hidden lg:inline font-medium">{t('navbar.orders')}</span>
                         </Link>
                       </Button>
-                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800" asChild>
                         <Link to="/admin/products">
                           <ClipboardList className="h-5 w-5" />
                           <span className="hidden lg:inline font-medium">{t('navbar.products')}</span>
                         </Link>
                       </Button>
-                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800" asChild>
                         <Link to="/admin/categories">
                           <ClipboardList className="h-5 w-5" />
                           <span className="hidden lg:inline font-medium">{t('navbar.categories')}</span>
                         </Link>
                       </Button>
-                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                      <Button variant="ghost" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800" asChild>
                         <Link to="/admin/manufacturers">
                           <ClipboardList className="h-5 w-5" />
                           <span className="hidden lg:inline font-medium">{t('navbar.manufacturers')}</span>
                         </Link>
                       </Button>
                       {role === 'ADMIN' && (
-                        <Button variant="ghost" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" asChild>
+                        <Button variant="ghost" className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800" asChild>
                           <Link to="/admin/users">
                             <User className="h-5 w-5" />
                             <span className="hidden lg:inline font-medium">{t('navbar.users')}</span>
@@ -116,7 +116,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
                   <Link
                     to="/profile"
-                    className={buttonVariants({ variant: "ghost", className: "hidden sm:flex items-center gap-3 text-sm text-muted-foreground border-l pl-4 ml-4 hover:text-primary" })}
+                    className={buttonVariants({ variant: "ghost", className: "hidden sm:flex items-center gap-3 text-sm text-slate-300 border-l border-slate-700 pl-4 ml-4 hover:text-white hover:bg-slate-800" })}
                   >
                     <User className="h-5 w-5" />
                     <span className="hidden sm:inline font-medium">{displayName}</span>
@@ -125,7 +125,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                     variant="ghost"
                     size="icon"
                     onClick={handleLogout}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-slate-300 hover:text-white hover:bg-slate-800"
                     title={t('navbar.logout')}
                   >
                     <LogOut className="h-5 w-5" />
